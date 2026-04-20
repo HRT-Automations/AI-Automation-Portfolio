@@ -3,32 +3,38 @@
 
 ## What this automation does
   This automation qualifies the customer by:
-  - Starting an AI conversation in real time
-  - Collects key details (budget, urgency, summary, contact info)
-  - Logs customer info on CRM platform or sheet
+  - Detect new customer bookings
+  - Process customer information
+  - AI Agent qualifies customer based on information
+  - Emails get sent out to team based on "lead_score" and categorized as:
+    - Emergencies
+    - High-Value
+    - Medium-Value
+    - Low-Value
 
 ## Who this is for
   - Electricians
   - Plumbers
   - Real estate agents
-  - service based businesses that do not operate 24/7
+  - service based businesses that are overloaded with customer requests and have KPI targets to hit
 
 ## Key features
   - CRM Integration
-  - AI powered chat agent
+  - AI powered qualification agent
+  - Customers queries or requests get categorized
   - works 24/7 with no manual input
-  - Instant reply to customers
+  - Instant emails get sent to team
 
 ## How it works
-  1) Customer clicks chat link on your webpage
-  2) AI Agent conversates with customer in proffesional & friendly manner
-  3) AI Agent gradually gathers all important information
-    - contact info, issue summary, urgency, budget, etc...
-  5) Customer info gets logged onto CRM or sheet
-    - Google sheets, Airtable, Slack, etc...
+  1) Google Sheet or CRM gets updated on new bookings
+  2) Customer information is gathered into workflow
+  3) AI Agent qualifies customer and gives a lead_score based on your preferations
+  4) Customer is categorized into 4 sections
+    - Emergencies, High-Value, Medium-Value, Low-Value
+  5) Emails get sent out team regarding bookings and customer info
 
 ## Tech Stack
   - n8n (workflow automation)
   - OpenAI chat model (gpt-5-mini)
-  - n8n simple memory (context)
+  - Gmail (communication channel)
   - Google sheets (lead storage)
