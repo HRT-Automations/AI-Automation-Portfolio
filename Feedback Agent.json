@@ -1,0 +1,655 @@
+{
+  "name": "Feedback Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00",
+          "mode": "list",
+          "cachedResultName": "Copy of Daily Bean Feedback ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1701422629,
+          "mode": "list",
+          "cachedResultName": "Test Data - convert",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00/edit#gid=1701422629"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        112
+      ],
+      "id": "b125a507-b2cc-452f-83b1-73451765b3e4",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "DzH9Kwb6ImpkHYpt",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64f75597-0561-4f4b-bd33-aa9ef1972107",
+              "name": "Name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "b49af4f7-b6a8-4d34-ad20-a4d6d026665b",
+              "name": "Contact",
+              "value": "={{ $json.Contact }}",
+              "type": "string"
+            },
+            {
+              "id": "1f5132cd-0eff-434a-b221-7ea38f48b165",
+              "name": "Feedback",
+              "value": "={{ $json.Feedback }}",
+              "type": "string"
+            },
+            {
+              "id": "046351d7-5713-4175-a848-e3918242a3ae",
+              "name": "Timestamp",
+              "value": "={{ $json.Timestamp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        112
+      ],
+      "id": "c7c9ee0d-262b-41ef-938d-0b49042e6469",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Task:\nAnalyze the customer’s feedback and determine (1) its category and (2) the relevant business area (Daily Bean Cafe).\n\nInput:\nFeedback: {{ $json.Feedback }}\n\nValid Categories:\n- question\n- problem\n- suggestion\n- other\n- unknown, if the feedback is missing, empty, irrelevant, or cannot be interpreted\n\nValid Areas:\n- kitchen\n- delivery\n- service\n- other\n- unknown, if the feedback is missing, empty, irrelevant, or cannot be interpreted\n\nInstructions:\n- NEVER create new labels, If unsure → set \"other\"\n- First validate that the feedback text is meaningful (not empty, null, too short to interpret, or containing only non-informative content).\n- If feedback is valid, classify it into one category and one area from the provided lists.\n- If classification is not possible, use the fallback \"unknown\" for the unassignable part(s).\n- Base your decision strictly on the content of the feedback.\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1312,
+        112
+      ],
+      "id": "ebe1c402-8e57-4062-8aec-85783e99ee96",
+      "name": "AI Categorization"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        352
+      ],
+      "id": "2d2ea0d0-bd77-40cb-8c72-e78d27df6c05",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gS4TkfPiCTuLr7pO",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"category\": \"question\",\n\"area\": \"kitchen\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1168,
+        336
+      ],
+      "id": "afa43acc-fb5c-4db7-98f6-3611b89e8cdd",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d264d807-47a3-46c8-ba64-96969c140804",
+              "name": "category",
+              "value": "={{ $json.output.category.toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "55037c9b-7668-4db8-91a0-e0e7cf889457",
+              "name": "area",
+              "value": "={{ $json.output.area.toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -960,
+        112
+      ],
+      "id": "f115e7ed-628b-4f47-a986-c074bfd47157",
+      "name": "Normalized labels"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00",
+          "mode": "list",
+          "cachedResultName": "Copy of Daily Bean Feedback ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1701422629,
+          "mode": "list",
+          "cachedResultName": "Test Data - convert",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tmkcivYlVOYrqdJ5oD1k3H9jANERePPDBun7Cz1ma00/edit#gid=1701422629"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Google Sheets Trigger').item.json.ID }}",
+            "Category": "={{ $json.category }}",
+            "Area": "={{ $json.area }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact",
+              "displayName": "Contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Area",
+              "displayName": "Area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Responsible",
+              "displayName": "Responsible",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -736,
+        112
+      ],
+      "id": "57357420-74af-452c-a6c9-d3bf0891e2e3",
+      "name": "Update feedback row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1b82ffd4-9ea4-4299-8647-50ffa23b79e6",
+              "leftValue": "={{ $('Normalized labels').item.json.category }}",
+              "rightValue": "unknown",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "6736eaac-f4c9-4e92-b171-66cc7da7e890",
+              "leftValue": "={{ $('Normalized labels').item.json.area }}",
+              "rightValue": "unknown",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -528,
+        112
+      ],
+      "id": "f4bd8cdf-d61e-44bf-8e22-0561c50d6c0e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Normalized labels').item.json.area }}",
+                    "rightValue": "kitchen",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c733c5ed-49bb-4c3f-ac45-d30f6fb82e79"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "kitchen"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2461d349-1d9f-4031-8656-5d58081e7df1",
+                    "leftValue": "={{ $('Normalized labels').item.json.area }}",
+                    "rightValue": "delivery",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "delivery"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b4fb9546-c0fc-4d78-a94d-a98e27776cf4",
+                    "leftValue": "={{ $('Normalized labels').item.json.area }}",
+                    "rightValue": "service",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "service"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        208
+      ],
+      "id": "2b0be50f-65ac-462b-8bfd-9734046fa9a0",
+      "name": "Route by area"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=New Review {{ $('Normalized labels').item.json.category }}",
+        "emailType": "text",
+        "message": "=Hi team, A new feedback came in:  \n\nFeedback: {{ $('Extract Data').item.json.Feedback }} \nCategory: {{ $('Normalized labels').item.json.category }} \nArea: {{ $('Normalized labels').item.json.area }} \nTimestamp: {{ $('Extract Data').item.json.Timestamp }} \n– Daily Bean Feedback Agent",
+        "options": {
+          "senderName": "Feedback Collector"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ec4cb404-0086-45f1-a416-7da5dd4832c1",
+      "name": "Kitchen",
+      "webhookId": "845d78dd-5f82-4ef3-8a7b-e8be1ea1513f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=New Review {{ $('Normalized labels').item.json.category }}",
+        "emailType": "text",
+        "message": "=Hi team, A new feedback came in:  \nFeedback: {{ $('Extract Data').item.json.Feedback }}\nCategory: {{ $('Normalized labels').item.json.category }} \nArea: {{ $('Normalized labels').item.json.area }} \nTimestamp: {{ $('Extract Data').item.json.Timestamp }}  \n– Daily Bean Feedback Agent",
+        "options": {
+          "senderName": "Feedback Collector"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        160
+      ],
+      "id": "7426fd24-6464-4350-87b7-119faf723583",
+      "name": "Delivery",
+      "webhookId": "845d78dd-5f82-4ef3-8a7b-e8be1ea1513f"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=New Review {{ $('Normalized labels').item.json.category }}",
+        "emailType": "text",
+        "message": "=Hi team, A new feedback came in:  \nFeedback: {{ $('Extract Data').item.json.Feedback }} \nCategory: {{ $('Normalized labels').item.json.category }} \nArea: {{ $('Normalized labels').item.json.area }} \nTimestamp: {{ $('Extract Data').item.json.Timestamp }}  \n– Daily Bean Feedback Agent",
+        "options": {
+          "senderName": "Feedback Collector"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        320
+      ],
+      "id": "83ea4f3c-2ae8-470d-96ba-9c7bc3cf67f8",
+      "name": "Service",
+      "webhookId": "845d78dd-5f82-4ef3-8a7b-e8be1ea1513f"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=New Review {{ $('Normalized labels').item.json.category }}",
+        "emailType": "text",
+        "message": "=Hi team, A new feedback came in:  \nFeedback: {{ $('Extract Data').item.json.Feedback }} \nCategory: {{ $('Normalized labels').item.json.category }} \nArea: {{ $('Normalized labels').item.json.area }} \nTimestamp: {{ $('Extract Data').item.json.Timestamp }}  \n– Daily Bean Feedback Agent",
+        "options": {
+          "senderName": "Feedback Collector"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        496
+      ],
+      "id": "c9d0bb99-fd12-40a3-8b30-c24d6c94f5a7",
+      "name": "Other",
+      "webhookId": "845d78dd-5f82-4ef3-8a7b-e8be1ea1513f"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "AI Categorization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Categorization",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Categorization",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Categorization": {
+      "main": [
+        [
+          {
+            "node": "Normalized labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalized labels": {
+      "main": [
+        [
+          {
+            "node": "Update feedback row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update feedback row": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Route by area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by area": {
+      "main": [
+        [
+          {
+            "node": "Kitchen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Service",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "138c5b1e-7d0e-4c2c-a6b3-495c233692b6",
+  "meta": {
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "ryPnHUrKKUKd2jhR",
+  "tags": []
+}
