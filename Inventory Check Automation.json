@@ -1,0 +1,261 @@
+{
+  "name": "Inventory Check Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4b7d525a-b433-442c-bf12-5f4abe66d0ba",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1SVEZiouu6sXx_VxW99ZSV8CGYhLIB47c-qis5C2GAHo",
+          "mode": "list",
+          "cachedResultName": "Inventory_Data_Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SVEZiouu6sXx_VxW99ZSV8CGYhLIB47c-qis5C2GAHo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SVEZiouu6sXx_VxW99ZSV8CGYhLIB47c-qis5C2GAHo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "19503e40-1497-40c3-bb47-f892bdd713ff",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "de1201d3-f0b2-4a1f-b550-bbcc5ca1f7b7",
+              "leftValue": "={{ $json.Stock }}",
+              "rightValue": "={{ $json.Threshold }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "74bc8e3d-e1e2-497a-85b8-4338b4438c9f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "af8cf125-03db-4736-8c6c-3be735abb295",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Act as a diligent, professional Inventory Control Assistant for a restaurant supplier. Your task is to generate and send one concise alert message to Gmail listing all items where stock is below the threshold. Data: {{JSON.stringify($json)}} Output format: Start with: \"⚠️ Low Stock Alert:\" Then list each item on a new line in this format: - [Item Name]: [Stock] left (need [Threshold]). Recommend reordering from [Supplier] to maintain adequate stock levels. Rules: - If stock is 0, say \"Out of stock\" instead of \"[Stock] left\". - Do not add summaries, explanations, or closing sentences.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "ba39bde6-1213-433c-892f-3fb389e1316d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        208
+      ],
+      "id": "80c3feb2-1999-42f5-a476-0144e1f299e6",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{$execution.id}}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        208
+      ],
+      "id": "26a3ce94-eb5b-479b-b8c7-d1a4ac0742c6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Low Stock Alert",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        208
+      ],
+      "id": "4d63c374-1991-4294-8c12-33400333563b",
+      "name": "Send a message in Gmail",
+      "webhookId": "d764befb-5f69-4dc9-8b18-0399b2cd2063"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "12bb0b55-e151-4a67-a5e6-4366021d460d",
+  "meta": {
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "fFqOMkPaYoNhXhQB",
+  "tags": []
+}
