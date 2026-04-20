@@ -1,4 +1,4 @@
-# Lead Cnversion Automation (conversation)
+# Lead Conversion Automation (conversation)
   Never lose a customer while offline. Let this AI Agent conversate with clients for you to collect key information.
 
 ## What this automation does
