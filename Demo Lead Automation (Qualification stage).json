@@ -1,0 +1,707 @@
+{
+  "name": "Demo Lead Automation (Qualification stage)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE",
+          "mode": "list",
+          "cachedResultName": "Automated Lead Conversions - test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -240
+      ],
+      "id": "5a273e97-ba0a-48cc-9dac-54d832816122",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "DzH9Kwb6ImpkHYpt",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0a65c61-8938-49d6-8a78-624a4e9579d9",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "e9eae34b-66f0-49fa-b13e-6cee8f4ab375",
+              "name": "phone ",
+              "value": "={{ $json[\"phone \"] }}",
+              "type": "number"
+            },
+            {
+              "id": "f6dff0f9-b5b8-46aa-8b3a-06f530026d10",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "5c2c0450-c007-4e4d-8c47-fabe1fc5449f",
+              "name": "service",
+              "value": "={{ $json.service }}",
+              "type": "string"
+            },
+            {
+              "id": "e8a29552-4a4d-4eba-afb2-27ccf9d453b0",
+              "name": "property",
+              "value": "={{ $json.property }}",
+              "type": "string"
+            },
+            {
+              "id": "39cca87a-fe97-4811-8fdf-b2d912c33742",
+              "name": "address",
+              "value": "={{ $json.address }}",
+              "type": "string"
+            },
+            {
+              "id": "540fbefd-a24d-41e2-8581-00942388de1e",
+              "name": "urgency ",
+              "value": "={{ $json[\"urgency \"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e501636d-ab4c-4adb-b3f4-80b5ecd39823",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "61976cbf-cd45-4113-9e6f-1a51a2a07a01",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -224
+      ],
+      "id": "9071c146-3db7-4b8f-8705-2d460d35173c",
+      "name": "Extract confirmed data"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        48
+      ],
+      "id": "b368d6e1-d3da-451f-98fc-45ebac219228",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a lead qualifying agent working for an electrical company called Choice Electrical. \nYour job is to analyse this electrical service lead. Gather all the incoming information and finalise a lead_score for each lead. The lead_score should be evaluated using the information from both the incoming input values and the google sheet using the \"Read\" tool. The lead_score should be a number between 1-100. The higher the lead_score, means the more value a customer would bring to the business.\nAlso extract the booking date and time from the google sheet using the \"Read\" tool.\n\n\nThe output has to be simple. An example output in JSON should be:\n\n{\n  \"date\": 25.03,\n  \"time\": 1400,\n  \"urgency\": \"emergency\",\n  \"lead_score\": 78\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        512,
+        -224
+      ],
+      "id": "8f387c51-a4a7-4edd-a9b8-8685b32b8819",
+      "name": "Qualification agent"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE",
+          "mode": "list",
+          "cachedResultName": "Automated Lead Conversions - test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        48
+      ],
+      "id": "85d2f2b7-c104-4f4d-adcf-867718587a43",
+      "name": "Read",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"date\": 25.03,\n  \"time\": 1400,\n  \"urgency\": \"emergency\",\n  \"lead_score\": 78\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -400
+      ],
+      "id": "0834efd0-42eb-42a4-abd8-57cc69f57bcc",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "EMERGENCY JOB BOOKED",
+        "emailType": "text",
+        "message": "=Customer EMERGENCY Job Booked: \n\nname: {{ $('Extract confirmed data').item.json.name }} \nphone: {{ $('Extract confirmed data').item.json[\"phone \"] }} \nemail: {{ $('Extract confirmed data').item.json.email }} \nservice: {{ $('Extract confirmed data').item.json.service }} \nproperty type: {{ $('Extract confirmed data').item.json.property }} address: {{ $('Extract confirmed data').item.json.address }} \nurgency: {{ $('Extract confirmed data').item.json[\"urgency \"] }}\ndate:{{ $('Qualification agent').item.json.output.date }}\ntime:{{ $('Qualification agent').item.json.output.time }}\njob summary: {{ $('Extract confirmed data').item.json.summary }} \n\n\n\n- Lead Qualification Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        -384
+      ],
+      "id": "66536c9e-8952-46f3-9234-1c9b70559e0b",
+      "name": "EMERGENCY",
+      "webhookId": "d66709bd-0b05-4c22-9ca5-1190c8ba93a6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Low Value Job Booked",
+        "emailType": "text",
+        "message": "=Customer Low Value Job Booked:\n\nname: {{ $('Extract confirmed data').item.json.name }} \nphone: {{ $('Extract confirmed data').item.json[\"phone \"] }} \nemail: {{ $('Extract confirmed data').item.json.email }} \nservice: {{ $('Extract confirmed data').item.json.service }} \nproperty type: {{ $('Extract confirmed data').item.json.property }} address: {{ $('Extract confirmed data').item.json.address }} \nurgency: {{ $('Extract confirmed data').item.json[\"urgency \"] }}\ndate:{{ $('Qualification agent').item.json.output.date }}\ntime:{{ $('Qualification agent').item.json.output.time }}\njob summary: {{ $('Extract confirmed data').item.json.summary }} \n\n\n\n- Lead Qualification Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        96
+      ],
+      "id": "1bc9beb2-61a7-4611-a792-a38968b2a8a7",
+      "name": "Low Value Job",
+      "webhookId": "9215f7cd-6ea7-4145-acb8-1a4c7ff85892",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Medium Value Job Booked",
+        "emailType": "text",
+        "message": "=Customer Medium Value Job Booked:\n\nname: {{ $('Extract confirmed data').item.json.name }} \nphone: {{ $('Extract confirmed data').item.json[\"phone \"] }} \nemail: {{ $('Extract confirmed data').item.json.email }} \nservice: {{ $('Extract confirmed data').item.json.service }} \nproperty type: {{ $('Extract confirmed data').item.json.property }} address: {{ $('Extract confirmed data').item.json.address }} \nurgency: {{ $('Extract confirmed data').item.json[\"urgency \"] }}\ndate:{{ $('Qualification agent').item.json.output.date }}\ntime:{{ $('Qualification agent').item.json.output.time }}\njob summary: {{ $('Extract confirmed data').item.json.summary }} \n\n\n\n- Lead Qualification Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        -64
+      ],
+      "id": "4a074e65-0b64-4627-909c-bd7c2922ce4e",
+      "name": "Medium Value Job",
+      "webhookId": "ae7f95e5-8f39-4360-84e2-d60d691ef941",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "HIGH-VALUE Job Booked",
+        "emailType": "text",
+        "message": "=Customer HIGH-VALUE Job Booked: \n\nname: {{ $('Extract confirmed data').item.json.name }} \nphone: {{ $('Extract confirmed data').item.json[\"phone \"] }} \nemail: {{ $('Extract confirmed data').item.json.email }} \nservice: {{ $('Extract confirmed data').item.json.service }} \nproperty type: {{ $('Extract confirmed data').item.json.property }} address: {{ $('Extract confirmed data').item.json.address }} \nurgency: {{ $('Extract confirmed data').item.json[\"urgency \"] }}\ndate:{{ $('Qualification agent').item.json.output.date }}\ntime:{{ $('Qualification agent').item.json.output.time }}\njob summary: {{ $('Extract confirmed data').item.json.summary }} \n\n\n\n- Lead Qualification Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        -224
+      ],
+      "id": "243d1a49-be22-4236-b3a2-410092fc2857",
+      "name": "High Value Job",
+      "webhookId": "5f269031-9723-4cac-b32e-bf8f62bbbbe9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57475a81-bfc6-402f-becc-e8e1f8670af8",
+              "name": "output.urgency",
+              "value": "={{ $json.output.urgency }}",
+              "type": "string"
+            },
+            {
+              "id": "836828a1-e0be-419c-b344-d987142ca1a2",
+              "name": "output.lead_score",
+              "value": "={{ $json.output.lead_score }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        -224
+      ],
+      "id": "198ebc79-1865-4871-8c41-55d5a5fdc458",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        80,
+        -240
+      ],
+      "id": "1d099636-3021-4e57-9ebc-60225c5fed05",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.urgency }}",
+                    "rightValue": "emergency",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "64aa8faf-41ab-4d7d-b703-c5b53ca5824c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d24381f0-3d3a-44a0-9241-7403a0143b63",
+                    "leftValue": "={{ $json.output.lead_score }}",
+                    "rightValue": 75,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "57298378-a871-4558-83e2-382273cd72ce",
+                    "leftValue": "={{ $json.output.lead_score }}",
+                    "rightValue": 75,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1008,
+        -240
+      ],
+      "id": "b65996b7-5df6-4c32-81a9-475ba9984598",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.lead_score }}",
+                    "rightValue": 40,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    },
+                    "id": "344652b7-5bba-4104-ba29-e5e57173c7da"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "63018f6e-e58b-4be9-9d27-e8f36155fd9a",
+                    "leftValue": "={{ $json.output.lead_score }}",
+                    "rightValue": 40,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "84c68ade-b4b9-4cc3-89c8-58b1798564e6",
+      "name": "lead_score<75"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1632,
+        -208
+      ],
+      "id": "379646ca-2a7c-419a-a876-016f3c1dd1a6",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract confirmed data": {
+      "main": [
+        [
+          {
+            "node": "Qualification agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Qualification agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read": {
+      "ai_tool": [
+        [
+          {
+            "node": "Qualification agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Qualification agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualification agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Extract confirmed data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "EMERGENCY",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "High Value Job",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "lead_score<75",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lead_score<75": {
+      "main": [
+        [
+          {
+            "node": "Medium Value Job",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Low Value Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EMERGENCY": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Value Job": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Medium Value Job": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Low Value Job": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Pacific/Auckland",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "cb0f6791-7a0c-4b6f-837c-1e7cd2438eb3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "qAGhVLn1yWh8duZV",
+  "tags": []
+}
