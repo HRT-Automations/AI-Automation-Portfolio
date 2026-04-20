@@ -11,7 +11,7 @@
   - Electricians
   - Plumbers
   - Real estate agents
-  - service based businesses that miss calls
+  - service based businesses that do not operate 24/7
 
 ## Key features
   - CRM Integration
