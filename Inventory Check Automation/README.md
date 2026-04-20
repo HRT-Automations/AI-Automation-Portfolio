@@ -22,7 +22,7 @@
   1) Sheet containing stock info gets checked on a sechduled basis
   2) Information runs into workflow
   3) AI Agent reads info and identifies what items need restocking and which ones don't
-  5) Emails get sent out team notifying them about inventory stock levels and which items need immediate restocking, and where to order items from
+  5) Emails get sent out team notifying them about inventory stock levels, which items need immediate restocking, and where to order items from
 
 ## Tech Stack
   - n8n (workflow automation)
