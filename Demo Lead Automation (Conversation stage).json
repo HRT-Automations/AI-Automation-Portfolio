@@ -1,0 +1,340 @@
+{
+  "name": "Demo Lead Automation (Conversation stage)",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Thank you for choosing Choice Electrical. How can we assist you?",
+        "availableInChat": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d5c2eb68-2a10-490b-acc3-9ea8decf7127",
+      "name": "When chat message received",
+      "webhookId": "ecb52340-abd5-48c4-80ea-2c6fa3919574"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a professional customer service assistant working for an Electrical service company called \"Choice Electrical\". Your job is to extract key information from the customer and make bookings for them by having a professional conversation with them.\n\nOur company sells the services listed below:\n-Lighting Schematics\n-Home Rewires\n-Switch Board Upgrades\n-Home Automation\n-Heat Pump Installation\n-Home Ventilation Systems\n-Appliance Installation\n-Underfloor Heating\n-Security Systems and CCTV\n-Exterior and Garden Lighting\n-Hot Water Cylinders\n-Kitchen Renovations\n-Bathroom Renovations\n-Extensions / Full Renovations\n-Electrical emergencies\n-Commercial electrical renovations\n\nYour job is to:\n1. Understand the customer's issue and try your best to assign it to one of the services that we provide listed above.\n2. Ask qualifying questions naturally:\n    - What service do they need? (repair, install, heat pump, etc.)\n    - Is it residential or commercial?\n    - How urgent is it? (emergency, soon, flexible)\n    - Budget awareness (if appropriate)\n3. Identify high-value jobs (commercial, urgent, installations)\n\nImportant , make sure to gather these key information during the friendly and professional conversation with every lead:\nExtract these as \"labels\":\n  - name\n  - phone\n  - email\n  - service\n  - property\n  - address\n  - urgency\n  - summary\n  - date\n  - time\n\nWhen you have extracted all this information, book all this information onto the google sheet using the \"booking\" tool but before you book it, make sure you use the \"check booking\" tool to make sure that this job has not already been booked.\nKeep in mind that some customers will message back regarding the same job, ensure that you are not making another booking for the same job by using the \"check booking\" tool. If it is indeed a previous client messaging regarding the same job already booked, do not make a new booking or create a new row. Instead update the current booking accordingly to the changes the customer wants. To locate the different jobs in the google sheet, use the all the columns to locate a job in the google sheet using the \"check booking\" tool if a job needs changes done to it. To make these changes to a job on the google sheet, use the \"booking\" tool.\n\nDescription of every column:\nname: their name\nphone: their phone number or a phone number we can use to contact them with\nemail: their contact email or an email we can use to contact them with\nservice: what type of service they need (repair, installation, consultation)\nproperty: what type of property is it (residential or commercial)\naddress: what the address of the job is\nurgency: how urgent this job is (emergency, soon, flexible)\nsummary: summary of the clients issue and what they need done\ndate: date availability in DD/MM/YY format\ntime: time available for their booking\nstatus: status of the job (confirmed, cancelled)\n - if the job has been booked, set the status as \"confirmed\"\n - if the customer messages back wanting to cancel the job, update or change the status of the same job to \"cancelled\"\n \nRules:\n  - Keep responses short, friendly and professional\n  - Sound like a real electrician company\n  - If urgent (power outage, sparks, burning smell), prioritize fast response\n  - set a status (confirmed, complete, cancelled) for every different client and book this status in the \"status\" column using the \"booking\" tool.\n  - book the \"date\" and \"time\" values on the google sheet as 'string JSON' and not 'number JSON'"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0f9cad04-da87-4803-93ef-71a9270028f4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        224
+      ],
+      "id": "0cdb2541-cd21-4b74-b7fc-3514495b6830",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        224
+      ],
+      "id": "f51ec563-61ee-4fc4-8cfa-0f3593d8faf1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to add a new booking to the Google Sheet or to make changes to an existing booking. The sheet has columns: name, phone, email, service, property, address, urgency, summary, date, time.",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE",
+          "mode": "list",
+          "cachedResultName": "Automated Lead Conversions - test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $fromAI('name') }}",
+            "phone ": "={{ $fromAI('number') }}",
+            "email": "={{ $fromAI('email') }}",
+            "service": "={{ $fromAI('service') }}",
+            "property": "={{ $fromAI('property') }}",
+            "address": "={{ $fromAI('address') }}",
+            "urgency ": "={{ $fromAI('urgency') }}",
+            "summary": "={{ $fromAI('summary') }}",
+            "date": "={{ $fromAI('date') }}",
+            "time": "={{ $fromAI('time') }}",
+            "status": "={{ $fromAI('status') }}"
+          },
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone ",
+              "displayName": "phone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "property",
+              "displayName": "property",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "urgency ",
+              "displayName": "urgency ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        208
+      ],
+      "id": "aeac7f9e-5127-4c77-be5e-8179b3fa6bc5",
+      "name": "booking",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to read and check bookings from the google sheet that need to be updated or changed. The sheet has columns name,  phone, email, service, property, address, urgency, summary, date, time.",
+        "documentId": {
+          "__rl": true,
+          "value": "1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE",
+          "mode": "list",
+          "cachedResultName": "Automated Lead Conversions - test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sG-C-J71scL_fYqK7MnoNxwOGaxzlMYH_pav9Oc8uEE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        208
+      ],
+      "id": "d6c5887d-932b-4aca-9129-af8ab1111bb2",
+      "name": "check booking",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "booking": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check booking": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d7029c42-2fe8-4013-8630-4c72f68367a0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "KlnmMZIB2v4dWvRi",
+  "tags": []
+}
