@@ -28,8 +28,7 @@
     - Google sheets, Airtable, Slack, etc...
 
 ## Screenshots
-![n8n workflow](
-
+![n8n workflow](demo-lead-conversion-conversation/workflow screenshot.png)
 
 ## Tech Stack
   - n8n (workflow automation)
