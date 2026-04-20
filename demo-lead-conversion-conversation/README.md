@@ -27,6 +27,10 @@
   5) Customer info gets logged onto CRM or sheet
     - Google sheets, Airtable, Slack, etc...
 
+## Screenshots
+![n8n workflow](
+
+
 ## Tech Stack
   - n8n (workflow automation)
   - OpenAI chat model (gpt-5-mini)
