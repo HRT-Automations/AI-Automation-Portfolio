@@ -21,7 +21,7 @@
 
 ## How it works
   1) Workflow runs at a specific time of day
-  2) AI Agent gathers info such as "niche", "target auidience", "platform", and "amount of ideas"
+  2) AI Agent gathers info such as "niche", "target audience", "platform", and "amount of ideas"
   3) AI Agent then generates ideas with all descriptions and prompts
   4) It ensures that these new ideas are unique and have not been resued in the past by checking the google sheet
   5) New content ideas then get logged neatly onto the google sheet
