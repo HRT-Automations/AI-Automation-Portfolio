@@ -1,0 +1,328 @@
+{
+  "name": "Youtube shorts AI content generator",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a content strategist that generate content on a scheduled basis for youtube shorts",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a content strategist.\n\nGenerate {{ $json.number_of_ideas }} content ideas for the niche:\n{{ $json.niche }}\n\nPlatform:\n{{ $json.platform }}\n\nTarget audience:\n{{ $json.audience }}\n\nFor each idea, return:\n1. Title\n2. A crazy one-line hook \n3. 3 quick numbered points \n4. Suggested on screen text lines for the one-line hook and 3 numbered points.\n5. A photo descripition of the crazy one-line hook\n6. One photo desicription each for the 3 numbered points portraying what they say\n7. A 2-3s CTA at the end (\"Follow for more\", etc)\n\nMake the ideas practical, scroll-stopping, and easy to turn into short-form videos.\n\nReturn the response as JSON only. \n\nSeperate the {{ $json.number_of_ideas }} content ideas into seperate output items.\n\nUse the \"Check Ideas\" tool to ensure that the new generated ideas have not been done already. If the new generated Ideas are the same as any of the Ideas already on the \"Check Ideas\" google sheet, generate new ones that do not match.\n\nEnsure that the \"title\" and \"description\" fields are not the same as any previous ideas already generated.\n\nDo not put the title, hook and cta values in the description."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "355d8fb3-0aaa-433b-88e9-e7f5d7ca3013",
+      "name": "AI Content Generator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        208
+      ],
+      "id": "7da6072f-64b9-45e8-9641-06deadc2198a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"title\": \"5 Automations Every Small Business Needs\",\n    \"hook\": \"Most small businesses waste hours every week doing this manually...\",\n    \"description\": \"Show five simple automations that save time.\",\n    \"cta\": \"Follow for more automation ideas.\"\n  }\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        208
+      ],
+      "id": "d61ece22-fa1e-4084-96c5-d2fa422f294b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U",
+          "mode": "list",
+          "cachedResultName": "Youtube shorts AI Automation content generated",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        208
+      ],
+      "id": "9a7dd983-c2ac-449b-8362-cb20f6eed9c1",
+      "name": "Check Ideas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U",
+          "mode": "list",
+          "cachedResultName": "Youtube shorts AI Automation content generated",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HmXPRU5cMy65wexPVojfob1wSuYU66D80c6WlE3FF4U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "hook": "={{ $json.hook }}",
+            "cta": "={{ $json.cta }}",
+            "description": "={{ $json.description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hook",
+              "displayName": "hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cta",
+              "displayName": "cta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "5f6149e7-6e8c-46e7-b117-a857df16eb12",
+      "name": "Add Ideas to sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        784,
+        0
+      ],
+      "id": "4230ff95-53ce-49bb-8708-21cd641c3030",
+      "name": "Seperate Ideas"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"niche\": \"Mind Blowing Facts\",\n  \"platform\": \"YouTube Shorts\",\n  \"audience\": \"worldwide\",\n  \"number_of_ideas\": 2\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "dbd7303a-5948-46be-8c54-b52c7300540b",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "e5f5fc15-f42e-44c3-a06c-4e37580d5da6",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Content Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Content Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Content Generator": {
+      "main": [
+        [
+          {
+            "node": "Seperate Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Ideas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Content Generator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Ideas to sheets": {
+      "main": [
+        []
+      ]
+    },
+    "Seperate Ideas": {
+      "main": [
+        [
+          {
+            "node": "Add Ideas to sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "AI Content Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Pacific/Auckland",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "bddb1b99-c7bd-4b86-9776-346a6e6f76eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "quwrQDPCqqBldz8R",
+  "tags": []
+}
