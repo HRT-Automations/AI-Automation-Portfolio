@@ -15,7 +15,7 @@
 
 ## Key features
   - Google sheets integration
-  - AI powered qualification agent
+  - AI powered agent
   - works 24/7
   - Fresh new unique Ideas everyday (does not reuse old content ideas)
 
