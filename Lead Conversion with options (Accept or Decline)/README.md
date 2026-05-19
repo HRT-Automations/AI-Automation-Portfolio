@@ -2,6 +2,8 @@
   Automatically gather lead query information, process and qualify, and send email confirmations to lead + team
 
 ## What this automation does
+  Video Demo:www.youtube.com/watch?v=cAXHVahAlk0&t
+  
   This automation qualifies the customer by:
   - AI Chat Agent with Lead
   - Gather Lead query or reason for contact
