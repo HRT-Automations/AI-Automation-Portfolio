@@ -3,6 +3,7 @@
 
 ## What this automation does
   Video Demo: https://www.youtube.com/watch?v=ahV8D0tFbE4&t=6s
+  
   This automation qualifies the customer by:
   - Detect new customer bookings
   - Process customer information
