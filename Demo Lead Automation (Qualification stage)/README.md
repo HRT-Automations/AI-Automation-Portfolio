@@ -2,7 +2,7 @@
   Automatically qualify customers and let this AI Agent decide for you which ones to focus on 
 
 ## What this automation does
-  Video Demo: https://www.youtube.com/watch?v=ahV8D0tFbE4&t=6s
+  Video Demo: www.youtube.com/watch?v=ahV8D0tFbE4&t
   
   This automation qualifies the customer by:
   - Detect new customer bookings
