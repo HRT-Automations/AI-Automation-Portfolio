@@ -2,6 +2,8 @@
   Put relevant feeback into categories to identify which areas they are for and who needs to deal with it
 
 ## What this automation does
+  Video Demo Link:https://www.youtube.com/watch?v=SGznkKkMw3w
+  
   This automation categories feedback and identifies relevant areas by:
   - Detect new customer feedback on sheets or CRM
   - Process customer information
