@@ -2,6 +2,7 @@
   Never lose a customer while offline. Let this AI Agent conversate with clients for you to collect key information.
 
 ## What this automation does
+  Youtube Video Demo: www.youtube.com/watch?v=ahV8D0tFbE4&t
   This automation conversates with the customer in real time by:
   - Starting an AI conversation in real time
   - Collects key details (budget, urgency, summary, contact info)
