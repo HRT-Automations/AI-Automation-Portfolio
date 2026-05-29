@@ -2,6 +2,8 @@
   Automatically manage your inventory and get notified of what is running out of stock
 
 ## What this automation does
+  Youtube Video Demo: https://www.youtube.com/watch?v=Bf0o5zrUkNY
+  
   This automation manages your inventory by:
   - Read stock numbers on a scheduled bases
   - AI Agent identifies what items need re-stocking
