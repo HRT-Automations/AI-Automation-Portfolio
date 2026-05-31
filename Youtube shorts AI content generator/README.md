@@ -2,6 +2,8 @@
   Automatically generates new AI content ideas for social media videos. You do not have to come up with the ideas yourself, simply let AI do it for you while you simply only need to edit.
 
 ## What this automation does
+  Youtube Video Demo: https://www.youtube.com/watch?v=Tw8vey2jpkg
+  
   This Automation:
   - Generates new content ideas based on a niche or topic
   - Runs on a sceduled basis (daily, weekly, etc)
