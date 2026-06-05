@@ -2,7 +2,7 @@
   Automatically Generate Business Performance Reports on a scheduled basis
 
 ## What this automation does
-  Video Demo: 
+  Video Demo: https://www.youtube.com/watch?v=aWUKizaVnXQ
   
   This automation generates the report by:
   - Pulls business statistics from CRM
