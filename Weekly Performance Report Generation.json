@@ -1,0 +1,377 @@
+{
+  "name": "Weekly Performance Report Generation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "9d9da5fb-910c-4c43-ba9e-67656fad863f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        160
+      ],
+      "id": "6bc59660-ddf3-4a79-9639-81b903ed383a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        416,
+        160
+      ],
+      "id": "f41270d2-ca39-4182-8e57-98d8c4d305cc",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1PjwUYXYOWGDWyyNIkB71j9SnkfoFdS6O5BN-J7kZrqU",
+          "mode": "list",
+          "cachedResultName": "Report Generation Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PjwUYXYOWGDWyyNIkB71j9SnkfoFdS6O5BN-J7kZrqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Performance Tables",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PjwUYXYOWGDWyyNIkB71j9SnkfoFdS6O5BN-J7kZrqU/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange",
+              "headerRow": 3,
+              "firstDataRow": 5
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        160
+      ],
+      "id": "4b7fa7d0-b0d5-4233-9ab2-5b4e83770574",
+      "name": "Get Performance Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Pull Data stage",
+        "height": 400,
+        "width": 624,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -80
+      ],
+      "id": "c44eb8e0-261c-4bfe-8bda-7cd2a83d9552",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a business reporting assistant.\n\nGenerate a JSON response only.\n\n{\n  \"executive_summary\": \"\",\n  \"highlights\": \"\",\n  \"actions\": \"\"\n}\n\nKeep the summary to 3 sentences maximum.\n\nUse concise professional language.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        160
+      ],
+      "id": "285632e2-942c-45ef-9194-1210b94ff98d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 1500,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        368
+      ],
+      "id": "17551fd3-4f78-48d0-801c-5b19432a8278",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody {\n  font-family: Arial, sans-serif;\n  padding: 30px;\n}\n\nh1 {\n  color: #1F2937;\n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  margin-top: 15px;\n}\n\nth {\n  background: #f3f4f6;\n  padding: 10px;\n  text-align: left;\n}\n\ntd {\n  padding: 10px;\n  border-bottom: 1px solid #ddd;\n}\n\n.section {\n  margin-top: 25px;\n}\n</style>\n</head>\n<body>\n\n<h1>Weekly Business Performance Report</h1>\n\n<div class=\"section\">\n<h2>Executive Summary</h2>\n<p>\n{{ $json.output.executive_summary }}\n</p>\n</div>\n\n<div class=\"section\">\n<h2>Key Metrics</h2>\n\n<table>\n<tr>\n<th>Metric</th>\n<th>Value</th>\n</tr>\n\n<tr><td>Total Revenue</td><td>$45,000</td></tr>\n<tr><td>Gross Profit</td><td>$18,000</td></tr>\n<tr><td>New Leads</td><td>32</td></tr>\n<tr><td>Conversion Rate</td><td>28%</td></tr>\n<tr><td>Jobs Completed</td><td>41</td></tr>\n<tr><td>Outstanding Invoices</td><td>$8,500</td></tr>\n<tr><td>Customer Satisfaction</td><td>4.8/5</td></tr>\n<tr><td>Business Health Score</td><td>87/100</td></tr>\n\n</table>\n</div>\n\n<div class=\"section\">\n<h2>Key Highlights</h2>\n<ul>\n<li>{{ $json.output.highlights[0] }}</li>\n<li>{{ $json.output.highlights[1] }}</li>\n<li>{{ $json.output.highlights[2] }}</li>\n</ul>\n</div>\n\n<div class=\"section\">\n<h2>Recommended Actions</h2>\n\n<table>\n<tr>\n<th>Priority</th>\n<th>Action</th>\n</tr>\n\n<tr>\n<td>High</td>\n<td>{{ $json.output.actions[0] }}</td>\n</tr>\n\n<tr>\n<td>Medium</td>\n<td>{{ $json.output.actions[1] }}</td>\n</tr>\n\n<tr>\n<td>Low</td>\n<td>{{ $json.output.actions[2] }}</td>\n</tr>\n\n</table>\n</div>\n\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        160
+      ],
+      "id": "b6f8aca4-693f-4571-9299-3fb970795a77",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"executive_summary\": \"\",\n  \"highlights\": [],\n  \"actions\": []\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        368
+      ],
+      "id": "5d13b970-f9ef-4f5b-b1c4-1d56ccd30f0d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Weekly Business Report",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        160
+      ],
+      "id": "8bacb38d-7f52-443b-bdb0-b5947fe3cde3",
+      "name": "Send a message",
+      "webhookId": "c5e90373-32c9-4b53-9927-84d7b5b3d289",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Generate Report Stage",
+        "height": 608,
+        "width": 544,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -80
+      ],
+      "id": "c87d8832-69cd-417a-af69-cf612b335638",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Report Sent stage",
+        "height": 448,
+        "width": 496,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        -80
+      ],
+      "id": "5ab4909f-5745-48a9-b790-51b080cdd00d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# How this Automation Works\n\n1) Performance statistics updated from company CRM\n2) On a weekly schedule the data is pulled into my workflow\n3) The data goes to the AI Agent\n4) AI Agent analyses data and processes the information into a report\n5) The report is generated in the \"HTML\" node\n6) The report is then sent to the team\n",
+        "height": 240,
+        "width": 624,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        336
+      ],
+      "id": "c105ceca-5568-4748-947d-24c91efcae41",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Benefits\n\n- Automated weekly report generated\n- No need to write report manually\n- No mistakes\n- 24/7",
+        "height": 176,
+        "width": 496,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        384
+      ],
+      "id": "ac709278-3e37-464e-8682-0b461de625cc",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Performance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Performance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Performance Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Pacific/Auckland",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "e201b87e-8180-451f-a66f-b150913ba132",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "BfcqxksvK8ruDX0c",
+  "tags": []
+}
