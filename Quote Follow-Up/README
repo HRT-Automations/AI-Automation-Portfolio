@@ -1,1 +1,41 @@
+# Quote Follow-Up AI Automation
+  Automatically follow up on clients regarding outstanding quotes
 
+## What this automation does
+  Video Demo: 
+  
+  This automation qualifies the customer by:
+  - Detect new customer quotes added to system
+  - Process quote information
+  - AI Agent composes email reminders for clients using quote info
+  - Emails get sent out to team for important notifications
+  - Gives clients time to consider their decision
+
+## Who this is for
+  - Trade Businesses
+  - Real estate agents
+  - service based businesses that are overloaded with clients
+
+## Key features
+  - CRM Integration
+  - AI powered qualification agent
+  - works 24/7 
+  - Instant emails get sent to team
+  - Automatic follow up process to clients
+  - Team member responsible to update system if client responds to quote
+
+## How it works
+  1) Quote is sent to client and added to system by team member (manual input)
+  2) After 2 days with no response from client, AI Agent composes follow up email using quote info
+  3) Client recieves email with option to "Decline" (if rejecting quote) or "Accept" (if still deciding)
+  4) If "Decline" then team recieves automatic email notifyting that quote was rejected
+  5) If "Accept" then we wait 3 more days
+  6) If no response after 3 days, then AI Agent composes final email reminder
+  7) Client recieves final follow up with options to "Accept" (if wish to proceed) or "Decline" (if with to reject)
+  8) Once client clicks an option, team recieves automatic email notfication, with suggestions to update system
+
+## Tech Stack
+  - n8n (workflow automation)
+  - OpenAI chat model (gpt-5-mini)
+  - Gmail (communication channel)
+  - Google sheets (lead storage)
