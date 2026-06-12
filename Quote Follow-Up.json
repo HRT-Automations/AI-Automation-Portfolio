@@ -1,0 +1,944 @@
+{
+  "name": "Quote Follow-Up",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        48
+      ],
+      "id": "174225a1-5a74-4e60-b14e-2140eb92fb95",
+      "name": "Wait 2 days",
+      "webhookId": "2de8d7e8-293e-466f-a893-48407146376a"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8",
+          "mode": "list",
+          "cachedResultName": "Quote Follow-Up Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Pending"
+            },
+            {
+              "lookupColumn": "quoteID",
+              "lookupValue": "={{ $json.quoteID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        64
+      ],
+      "id": "97c0b664-29c6-4fed-993e-3140efc60509",
+      "name": "Get rows",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8",
+          "mode": "list",
+          "cachedResultName": "Quote Follow-Up Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "quoteID",
+              "lookupValue": "={{ $json.quoteID }}"
+            },
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        48
+      ],
+      "id": "58035055-4a4d-433d-908e-15f925672825",
+      "name": "Get same job details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "402c314d-915a-423a-99f4-762b7d69a69d",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.status }}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        64
+      ],
+      "id": "8c12f5a7-c6bc-4064-81aa-2284bbb57c46",
+      "name": "Filter rows \"Pending\""
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        256
+      ],
+      "id": "90aacc65-4184-43de-a76d-1c5dff49037f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a quote follow up specialist for a company sending out follow up emails for the clients that have not responded to our quotes. \nYou are to write a short friendly email reminder for them.\n\nThe emails structure will be as follows:\n\n{ \n  Hi {{ $json.customerName }},\n    We noticed that you have not responded to our quote of {{ $json.quoteValue }}, for the {{ $json.serviceType }}. This is a friendly reminder incase you had any questions please refer to {{ $json.assigned }}. \nSimply click \"Accept\" if you are still deciding, or \"Decline\" if you do not want to proceed with our services.\n}\n\nTell them to not reply to this email but if they have questions, email",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        48
+      ],
+      "id": "bf85321a-bd72-4fb4-84b4-af90840f2158",
+      "name": "Analyse info + create follow up email"
+    },
+    {
+      "parameters": {
+        "content": "# Passes through new added row",
+        "height": 480,
+        "width": 640,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -112
+      ],
+      "id": "9b29db23-f0a4-492e-bb31-e99a6acf02d8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Check quote status ",
+        "height": 480,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -112
+      ],
+      "id": "b5e3ff42-d1b5-422e-b936-47e9204136c7",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Quote Follow-Up",
+        "message": "={{ $json.output }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Accept"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        48
+      ],
+      "id": "28945a36-2306-48f0-9c3d-87c75c5063d7",
+      "name": "Send message and wait for response",
+      "webhookId": "58d75653-cab1-4590-9feb-0a2e05a24de4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Compose Email",
+        "height": 480,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -112
+      ],
+      "id": "f2c0fed2-42cd-42ea-ac79-a218470dbdc5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Send Email and wait for approval",
+        "height": 480,
+        "width": 640,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -112
+      ],
+      "id": "dc29af4e-3e2b-4454-a5fa-84a081f2d87f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        32
+      ],
+      "id": "d4a06351-5707-4ff0-8937-b52ffdf25a58",
+      "name": "Wait 3 days",
+      "webhookId": "5aa122f7-5021-405d-b115-3f8402d1520c"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8",
+          "mode": "list",
+          "cachedResultName": "Quote Follow-Up Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "quoteID",
+              "lookupValue": "={{ $('Get same job details').item.json.quoteID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -32,
+        512
+      ],
+      "id": "21c7f7da-a5a3-43de-be6f-4088de2b1792",
+      "name": "Re-check quote status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S8YQwlPgTheaCFXb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "84643708-0905-4434-8759-f753866f97fb",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        512
+      ],
+      "id": "6f5c2006-4857-4da2-b7ca-304e258dad79",
+      "name": "If still pending"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "75a73c0c-ff16-497b-96fb-63671bd2da7a",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1584,
+        48
+      ],
+      "id": "8c45b370-5510-4886-8e31-ea91185ac6bb",
+      "name": "If undecided"
+    },
+    {
+      "parameters": {
+        "content": "# Re-check quote status",
+        "height": 288,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        384
+      ],
+      "id": "fc21bfd9-2227-4eb3-bc7f-8ed2d82eaa67",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=Quote Rejected by  {{ $('Get same job details').item.json.customerName }}",
+        "emailType": "text",
+        "message": "=Hi team, our client  {{ $('Get same job details').item.json.customerName }} has decided to NOT proceed with the job regarding the {{ $('Get same job details').item.json.serviceType }}.\n\nThe quoteID is {{ $('Get same job details').item.json.quoteID }}.\n\nPlease ensure to remove client & Job details from our system.\n\nMany thanks,\nAdmin",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        64
+      ],
+      "id": "94bf7ee3-3847-455a-9377-31a04fe8e0a0",
+      "name": "Quote Rejected email to team",
+      "webhookId": "d0313d39-b4ce-470e-8e10-db2d2ef1a30b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Rejected Email to team",
+        "height": 384,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -112
+      ],
+      "id": "c0eaf6c0-eec5-4cb6-a6ae-4cf69e7e23db",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        656
+      ],
+      "id": "cecfcea4-40c3-409e-9c35-18b9ca8adf26",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are admin for a company and your purpose is to compose the final follow up quote email for our clients. The clients have already been reminded through email about a quote that was already sent to them. However, they were still undecided. Your job now is to make an email to send them the final reminder about the quote.\n\nThe email structure will follow as:\n{\n  Hi {{ $json.customerName }}, this is the final email reminder regarding the outstanding quote for the {{ $json.serviceType }}. The quote was for {{ $json.quoteValue }}, but we are still waiting for confirmation on your end. \nIf you do not wish to proceed with our services then simply click the \"decline\" button. Or if you wish to accept the quote and follow through with our services, click the accept button and we will notify{{ $json.assigned }}.\n}\n\nKeep the email friendly and proffesional.\nTell them to not reply to this email but if they have questions, email {{ $json.assigned }}.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        496
+      ],
+      "id": "d0384a62-f571-4a21-811c-4984c5df3dc0",
+      "name": "Create final reminder"
+    },
+    {
+      "parameters": {
+        "content": "# Create final reminder",
+        "height": 400,
+        "width": 384,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        384
+      ],
+      "id": "ce107e0a-9205-477a-8ce1-80b872aa93ab",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Send Final Reminder & Notify team",
+        "height": 416,
+        "width": 736,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        736,
+        384
+      ],
+      "id": "25f21859-2633-41a4-96ff-c358e48c2a65",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=Final quote reminder for  {{ $('If still pending').item.json.serviceType }}.",
+        "message": "={{ $json.output }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Accept"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        496
+      ],
+      "id": "eaf5d4a5-02c4-41e3-aed8-4931e66be2cf",
+      "name": "Email final reminder to client",
+      "webhookId": "709ddae1-6c68-47df-9c8f-9cc8b684ad41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0db3f62d-e55d-4f31-bd43-f7abf3f50cde",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        496
+      ],
+      "id": "774d2c72-e123-4b42-93fd-b4585a8743cf",
+      "name": "Quote accepted or declined"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=Quote for  {{ $('If still pending').item.json.customerName }}, regarding {{ $('If still pending').item.json.serviceType }} Accepted.",
+        "emailType": "text",
+        "message": "=Hey {{ $('If still pending').item.json.assigned }}, our client  {{ $('If still pending').item.json.customerName }} has accepted the quote of {{ $('If still pending').item.json.quoteValue }} for the {{ $('If still pending').item.json.serviceType }}. \n\nThe quoteID is {{ $('If still pending').item.json.quoteID }}.\n\nPlease ensure to follow up with the client ASAP and update the database.\n\nBest Regards,\nAdmin",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        448
+      ],
+      "id": "d378dd14-a7c5-4754-94fe-dcb25c7ac098",
+      "name": "Quote accepted email to team",
+      "webhookId": "4eba2eaa-2639-49c3-a7e8-b30374cfe1ea",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "=Quote for  {{ $('If still pending').item.json.customerName }} regarding the {{ $('If still pending').item.json.serviceType }} Declined.",
+        "emailType": "text",
+        "message": "=Hey team, the quote for {{ $('If still pending').item.json.customerName }} regarding the {{ $('If still pending').item.json.serviceType }} has been rejected. The client has decided not to proceed with our services. \n\nThe quoteID is {{ $('If still pending').item.json.quoteID }}.\n\nPlease ensure to remove the client and job details from our database.\n\nBest Regards,\nAdmin",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        624
+      ],
+      "id": "2fc904cb-e776-4dbc-b21e-144273dea8df",
+      "name": "Quote rejected email to team",
+      "webhookId": "70475319-86ab-4d6d-9a9d-3ada8e826e57",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8",
+          "mode": "list",
+          "cachedResultName": "Quote Follow-Up Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lRytB1xvDrYUXGFITRGwN4mtpHqlXOGE6gsLlKea1Q8/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        64
+      ],
+      "id": "05afc281-832a-401b-9c3b-4b5fe307efd1",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "DzH9Kwb6ImpkHYpt",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Notes:\n- Cannot have more then one \"Pending\" job in the sheet\n- Suggested to create sperate workflows for more practical cases\n",
+        "height": 144,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        288
+      ],
+      "id": "543fbc4d-619e-4373-83e7-5fc9c903748c",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# How this automation works:\n\n1) Trigger starts when new quote is added onto google sheets\n2) If the client has not responded within 2 days, the AI Agent composes reminder email.\n3) Reminder email gets sent to client asking if they reject or still deciding\n4) If rejected then team gets notified via email. If still deciding then we wait 3 days.\n5) If still has not responded, then same job details gets pulled. Ensuring that the status is still pending\n6) Once confirmed, AI Agent composes final reminder and sent to client\n7) Whether the quote has been accepeted or declined, assigned member gets notified",
+        "height": 352,
+        "width": 480,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        384
+      ],
+      "id": "4b7bc3c8-5581-4a6b-bdd0-a91977a0d78e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Benefits\n- Automated Quote Follow up\n- Less Admin work\n- Gives client time to consider\n- Works 24/7\n- No delays",
+        "height": 192,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        448
+      ],
+      "id": "513f1109-53a1-4afb-87d2-3070924d6875",
+      "name": "Sticky Note10"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get rows": {
+      "main": [
+        [
+          {
+            "node": "Filter rows \"Pending\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 days": {
+      "main": [
+        [
+          {
+            "node": "Get same job details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get same job details": {
+      "main": [
+        [
+          {
+            "node": "Analyse info + create follow up email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter rows \"Pending\"": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyse info + create follow up email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse info + create follow up email": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If undecided",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 days": {
+      "main": [
+        [
+          {
+            "node": "Re-check quote status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-check quote status": {
+      "main": [
+        [
+          {
+            "node": "If still pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If undecided": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 days",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quote Rejected email to team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If still pending": {
+      "main": [
+        [
+          {
+            "node": "Create final reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create final reminder",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create final reminder": {
+      "main": [
+        [
+          {
+            "node": "Email final reminder to client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email final reminder to client": {
+      "main": [
+        [
+          {
+            "node": "Quote accepted or declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quote accepted or declined": {
+      "main": [
+        [
+          {
+            "node": "Quote accepted email to team",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quote rejected email to team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Pacific/Auckland",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "8a362c85-3eaf-4202-9c76-58526648ffca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "XlR6KyKlS9zVtrZJ",
+  "tags": []
+}
