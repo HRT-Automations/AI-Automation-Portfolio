@@ -1,0 +1,280 @@
+{
+  "name": "Review Request Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1E7tdy_KADgjB4p-e4Dd61DFscIMKlYBc_wW4PxGSzqg",
+          "mode": "list",
+          "cachedResultName": "Completed jobs (review automation)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E7tdy_KADgjB4p-e4Dd61DFscIMKlYBc_wW4PxGSzqg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E7tdy_KADgjB4p-e4Dd61DFscIMKlYBc_wW4PxGSzqg/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -192
+      ],
+      "id": "5b554077-5158-421f-8282-fed84dfaa015",
+      "name": "Get row added",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "DzH9Kwb6ImpkHYpt",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -192
+      ],
+      "id": "3b4462b1-a125-4922-a6c5-bfc770e519e4",
+      "name": "Wait 1 day",
+      "webhookId": "ccd55d0f-84e3-42d1-800e-287770054d3b"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6cf42aae-1982-4a93-b52e-b948d21426dd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Get Completed Jobs",
+        "height": 256,
+        "width": 384,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -288
+      ],
+      "id": "e06dcb31-cd3c-479e-920b-d71e230f84af",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Compose email",
+        "height": 416,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -288
+      ],
+      "id": "e541547f-61d5-4f5b-9f53-a77b7bf33274",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an admin for a company, and your role is to compose follow up emails for our completed jobs. The follow up emails are to request the client for a google review for the company. \n\nWhen composing the email, be sure to be friendly, professional, and ensure that you are not pressuring them into it. \n\nFollow this email structure:\n{\n  Hi {{ $json.name }}, thank you for using our services for the {{ $json.serviceType }}. We hope you were happy with our services. If you have any questions feel free to reach out to {{ $json.confirmedBy }}. \n\nFor the time being, if you would like to leave a google review for our company, that would be very much appreciated. \n\nHere is the link to leave a review: https://g.page/r/CQMbPk5JhxlZEBM/review\n\nThanks again,\n[Company Name]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        -192
+      ],
+      "id": "457f9877-a8aa-4e7b-8079-1db2b4f23ed1",
+      "name": "Compose follow-up"
+    },
+    {
+      "parameters": {
+        "sendTo": "hazakiahrosstigarea@gmail.com",
+        "subject": "Job Completed follow up",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -192
+      ],
+      "id": "b87818a4-ae41-4031-ba0f-8284b1325f02",
+      "name": "Send follow up email",
+      "webhookId": "1d61a503-ed54-48ff-b8a0-30bc802d13b6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QssrXIu7geO3M2ue",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Send Email",
+        "height": 272,
+        "width": 272,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -288
+      ],
+      "id": "5706ec13-fdc3-4c7c-900e-0e67cc389277",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Workflow Plan\n\n1) Completed Jobs: Added to google sheets\n2) Wait Node: 24hrs\n3) AI Agent: Write friendly reminder for google review\n4) Send email to client\n",
+        "height": 176,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -480
+      ],
+      "id": "e7303958-f1f4-45cd-ac85-01c051975a37",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# How it works\n\n1) Completed Jobs get added onto CRM\n2) Wait 1 day\n3) AI Agent composes follow up review email using client/job info\n4) Email gets sent to client",
+        "width": 512,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -464
+      ],
+      "id": "b1309aeb-49b6-40c1-9483-293c94a0f5cd",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Benefits\n\n- Minimal manual input\n- Automatic follow up + review\n- 24/7\n- No mistakes\n- No delays",
+        "height": 192,
+        "width": 384,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -16
+      ],
+      "id": "60d45be1-e234-4318-90c7-689daa93090e",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row added": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 day": {
+      "main": [
+        [
+          {
+            "node": "Compose follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Compose follow-up",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose follow-up": {
+      "main": [
+        [
+          {
+            "node": "Send follow up email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6cd45be0-6dbd-481f-89aa-1b9b8188d892",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "id": "4cdV1PnxogHMFEFg",
+  "tags": []
+}
