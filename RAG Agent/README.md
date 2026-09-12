@@ -22,10 +22,10 @@
   - Real time conversation
 
 ## How it works
-  1) Downloads important documents containing key information
-  2) Scans documents as customer asks questions
-  3) Replies to customer in simple straight forward answers
-  4) Provides further support and recommendations
+  1) Client clicks RAG Agent chat link
+  2) Client converses with Agent
+  3) AI Agent replies with info gathered from relevant documents
+  4) Client satisfied with quick easy to use system that removes questions and doubts
 
 ## Tech Stack
   - n8n (workflow automation)
