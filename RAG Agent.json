@@ -1,0 +1,350 @@
+{
+  "name": "RAG Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "da564398-df59-47de-b7e5-0e85d6637054",
+      "name": "Start download"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1ucxwVnmlRg3cw5UEfPX1ZKRlAfsiEMQP",
+          "mode": "list",
+          "cachedResultName": "real_estate_property_rag_knowledge_base(1).docx",
+          "cachedResultUrl": "https://docs.google.com/document/d/1ucxwVnmlRg3cw5UEfPX1ZKRlAfsiEMQP/edit?usp=drivesdk&ouid=100539206634810424827&rtpof=true&sd=true"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "451c7b75-e9ba-424d-b8d5-fc460cc7624e",
+      "name": "Download file",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "LrjTvFuQkQYFxpfN",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Download file stage",
+        "height": 240,
+        "width": 464,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -64
+      ],
+      "id": "032ebc66-ed29-4eed-979a-168fd3be5c2c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        160
+      ],
+      "id": "2b124408-369e-4d4f-a91b-5d4d2afaff63",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        288
+      ],
+      "id": "6a8eb837-b5d7-4399-9631-a38d1f8b51c1",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Upload data stage",
+        "height": 480,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "8990720b-dddb-40f6-9b4f-9e55cb2a5c32",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "760d06d6-57b2-4ef0-9969-c36f30dca5c1",
+      "name": "RAG Agent Storage"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi, if you have any questions regarding the property on advertisement, please tell me and I will assist you.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -48,
+        480
+      ],
+      "id": "5441caed-d196-4cd1-9771-b23d51c71775",
+      "name": "When chat message received",
+      "webhookId": "b76ce1ff-24d1-40b5-9bb9-e1bad269672a"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to extract information needed to answer client and customer queries.",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        },
+        "topK": 8
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        720
+      ],
+      "id": "1a2d6137-bfef-4833-b73e-07a853c5263b",
+      "name": "RAG Agent Storage1"
+    },
+    {
+      "parameters": {
+        "content": "# RAG Agent \n",
+        "height": 416,
+        "width": 768,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        432
+      ],
+      "id": "e1e00df8-3056-4589-9cef-336eba5c546e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a RAG Agent that answers questions and queries from clients. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        176,
+        480
+      ],
+      "id": "171e7fc0-c01b-4f0d-bb64-545c5c871bbd",
+      "name": "RAG Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-terra",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-terra"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        720
+      ],
+      "id": "fa08c08f-f0e7-441c-8891-eddcdb21c097",
+      "name": "gpt-5.6-terra",
+      "credentials": {
+        "openAiApi": {
+          "id": "9rUiqTlvnaetb2Eq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# How it works\n1) Downloads google drive file holding information\n2) Stores information in vector storage with embeddings\n3) Agent answers client query using downloaded information\n",
+        "height": 224,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        192
+      ],
+      "id": "1eb91f30-c54f-4cd0-855a-f3c633f5793f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Benefits\n1) Works 24/7\n2) Works when your not available\n3) Answers common customer questions for you\n4) Friendly chat with clients\n5) Frees more time for you to do other things",
+        "height": 256,
+        "width": 368,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        688,
+        432
+      ],
+      "id": "3d6a777f-9197-448d-ba79-3c43472d216a",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start download": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "RAG Agent Storage",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "RAG Agent Storage",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "RAG Agent Storage1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Agent Storage1": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5.6-terra": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0bb08c95-c862-424a-8f36-ed7c43054804",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f67197bf9bb08da4a168ae064ac43ac99d758a8914d3d10fb940ddc1c1a591ae"
+  },
+  "nodeGroups": [],
+  "id": "HEEfR5nHIhLVf6YG",
+  "tags": []
+}
